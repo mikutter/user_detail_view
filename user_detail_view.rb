@@ -261,7 +261,7 @@ Plugin.create :user_detail_view do
       Plugin.call(:open, user.icon_large)
       true end
     icon.ssc(:realize) do |this|
-      this.window.set_cursor(Gdk::Cursor.new(Gdk::Cursor::HAND2))
+      this.window.set_cursor(Gdk::Cursor.new(:hand2))
       false end
 
     icon_alignment = Gtk::Alignment.new(0.5, 0, 0, 0)
@@ -287,7 +287,7 @@ Plugin.create :user_detail_view do
     w_name.ssc(:event) do |this, event|
       if event.is_a? ::Gdk::EventMotion
         this.get_window(:text)
-          .set_cursor(::Gdk::Cursor.new(::Gdk::Cursor::XTERM)) end
+          .set_cursor(::Gdk::Cursor.new(:xterm)) end
       false end
     tag_sn = w_name.buffer.create_tag('sn', {foreground: '#0000ff',
                                              weight: Pango::Weight::BOLD,
@@ -342,7 +342,7 @@ Plugin.create :user_detail_view do
       when ::Gdk::EventMotion
         textview
           .get_window(:text)
-          .set_cursor(::Gdk::Cursor.new(::Gdk::Cursor::HAND2))
+          .set_cursor(::Gdk::Cursor.new(:hand2))
       end
       false
     end
