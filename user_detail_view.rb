@@ -286,7 +286,7 @@ Plugin.create :user_detail_view do
     w_name.wrap_mode = Gtk::TextTag::WRAP_CHAR
     w_name.ssc(:event) do |this, event|
       if event.is_a? ::Gdk::EventMotion
-        this.get_window(::Gtk::TextView::WINDOW_TEXT)
+        this.get_window(:text)
           .set_cursor(::Gdk::Cursor.new(::Gdk::Cursor::XTERM)) end
       false end
     tag_sn = w_name.buffer.create_tag('sn', {foreground: '#0000ff',
@@ -341,7 +341,7 @@ Plugin.create :user_detail_view do
         end
       when ::Gdk::EventMotion
         textview
-          .get_window(::Gtk::TextView::WINDOW_TEXT)
+          .get_window(:text)
           .set_cursor(::Gdk::Cursor.new(::Gdk::Cursor::HAND2))
       end
       false
