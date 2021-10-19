@@ -97,7 +97,7 @@ Plugin.create :user_detail_view do
     wrapper.no_show_all = true
     wrapper.show
     nativewidget wrapper.add(scrolledwindow)
-    wrapper.ssc(:expose_event) do
+    wrapper.ssc(:draw) do
       wrapper.no_show_all = false
       wrapper.show_all
       false end
