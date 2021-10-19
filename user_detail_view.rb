@@ -90,7 +90,7 @@ Plugin.create :user_detail_view do
       closeup(plugin.relation_bar(model))
     container.closeup(plugin.mutebutton(model)) if not model.me?
     scrolledwindow = ::Gtk::ScrolledWindow.new
-    scrolledwindow.set_policy(::Gtk::POLICY_AUTOMATIC, ::Gtk::POLICY_AUTOMATIC)
+    scrolledwindow.set_policy(:automatic, :automatic)
     scrolledwindow.add_with_viewport(container)
     scrolledwindow.style = container.style
     wrapper = Gtk::EventBox.new
@@ -283,7 +283,7 @@ Plugin.create :user_detail_view do
     w_name = ::Gtk::TextView.new
     w_name.editable = false
     w_name.cursor_visible = false
-    w_name.wrap_mode = Gtk::TextTag::WRAP_CHAR
+    w_name.wrap_mode = :char
     w_name.ssc(:event) do |this, event|
       if event.is_a? ::Gdk::EventMotion
         this.get_window(:text)
@@ -314,8 +314,8 @@ Plugin.create :user_detail_view do
       profile_columns.each_with_index do |column, index|
         key, value = column
         table.
-          attach(::Gtk::Label.new(value.to_s).right, 0, 1, index, index+1).
-          attach(::Gtk::Label.new(key.to_s)  .left , 1, 2, index, index+1)
+          attach(::Gtk::Label.new(value.to_s).set_halign(:end), 0, 1, index, index+1).
+          attach(::Gtk::Label.new(key.to_s).set_halign(:start), 1, 2, index, index+1)
       end
     }.set_row_spacing(0, 4).
       set_row_spacing(1, 4).
