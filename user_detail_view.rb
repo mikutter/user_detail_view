@@ -85,7 +85,7 @@ Plugin.create :user_detail_view do
   user_fragment :aboutuser, _("ユーザについて") do
     set_icon model.icon
     bio = ::Gtk::IntelligentTextview.new("")
-    container = ::Gtk::VBox.new.
+    container = ::Gtk::Box.new(:vertical).
       closeup(bio).
       closeup(plugin.relation_bar(model))
     container.closeup(plugin.mutebutton(model)) if not model.me?
@@ -162,11 +162,11 @@ Plugin.create :user_detail_view do
   # ==== Args
   # [user] 対象となるユーザ
   # ==== Return
-  # リレーションバーのウィジェット(Gtk::VBox)
+  # リレーションバーのウィジェット(Gtk::Box)
   def relation_bar(user)
     icon_size = Gdk::Rectangle.new(0, 0, 32, 32)
     arrow_size = Gdk::Rectangle.new(0, 0, 16, 16)
-    container = ::Gtk::VBox.new(false, 4)
+    container = ::Gtk::Box.new(:vertical, 4)
     Enumerator.new{|y|
       Plugin.filtering(:worlds, y)
     }.select{|world|
@@ -180,14 +180,14 @@ Plugin.create :user_detail_view do
       relation = if me.user_obj == user
                    ::Gtk::Label.new(_("それはあなたです！"))
                  else
-                   ::Gtk::HBox.new.
+                   ::Gtk::Box.new(:horizontal).
                      closeup(w_eventbox_image_following).
                      closeup(w_following_label) end
-      relation_container = ::Gtk::HBox.new(false, icon_size.width/2)
+      relation_container = ::Gtk::Box.new(:horizontal, icon_size.width/2)
       relation_container.closeup(::Gtk::WebIcon.new(me.user_obj.icon, icon_size).tooltip("#{me.user_obj.idname}(#{me.user_obj[:name]})"))
-      relation_container.closeup(::Gtk::VBox.new.
+      relation_container.closeup(::Gtk::Box.new(:vertical).
                                  closeup(relation).
-                                 closeup(::Gtk::HBox.new.
+                                 closeup(::Gtk::Box.new(:horizontal).
                                          closeup(w_eventbox_image_followed).
                                          closeup(w_followed_label)))
       relation_container.closeup(::Gtk::WebIcon.new(user.icon, icon_size).tooltip("#{user.idname}(#{user[:name]})"))
@@ -267,10 +267,10 @@ Plugin.create :user_detail_view do
     icon_alignment = Gtk::Alignment.new(0.5, 0, 0, 0)
                      .set_padding(*[UserConfig[:profile_icon_margin]]*4)
 
-    eventbox.add(::Gtk::VBox.new(false, 0).
-                  add(::Gtk::HBox.new.
+    eventbox.add(::Gtk::Box.new(:vertical, 0).
+                  add(::Gtk::Box.new(:horizontal).
                        closeup(icon_alignment.add(icon)).
-                       add(::Gtk::VBox.new.closeup(user_name(user, intent_token)).closeup(profile_table(user)))))
+                       add(::Gtk::Box.new(:vertical).closeup(user_name(user, intent_token)).closeup(profile_table(user)))))
   end
 
   # ユーザ名を表示する
@@ -296,7 +296,7 @@ Plugin.create :user_detail_view do
 
     w_name.buffer.insert(w_name.buffer.start_iter, user[:idname], tag_sn)
     w_name.buffer.insert(w_name.buffer.end_iter, "\n#{user[:name]}")
-    Gtk::VBox.new.add(w_name) end
+    Gtk::Box.new(:vertical).add(w_name) end
 
   # プロフィールの上のところの格子になってる奴をかえす
   # ==== Args
