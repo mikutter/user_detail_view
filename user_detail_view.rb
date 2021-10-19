@@ -184,13 +184,13 @@ Plugin.create :user_detail_view do
                      closeup(w_eventbox_image_following).
                      closeup(w_following_label) end
       relation_container = ::Gtk::Box.new(:horizontal, icon_size.width/2)
-      relation_container.closeup(::Gtk::WebIcon.new(me.user_obj.icon, icon_size).tooltip("#{me.user_obj.idname}(#{me.user_obj[:name]})"))
+      relation_container.closeup(::Gtk::WebIcon.new(me.user_obj.icon, icon_size).set_tooltip_text("#{me.user_obj.idname}(#{me.user_obj[:name]})"))
       relation_container.closeup(::Gtk::Box.new(:vertical).
                                  closeup(relation).
                                  closeup(::Gtk::Box.new(:horizontal).
                                          closeup(w_eventbox_image_followed).
                                          closeup(w_followed_label)))
-      relation_container.closeup(::Gtk::WebIcon.new(user.icon, icon_size).tooltip("#{user.idname}(#{user[:name]})"))
+      relation_container.closeup(::Gtk::WebIcon.new(user.icon, icon_size).set_tooltip_text("#{user.idname}(#{user[:name]})"))
       if me.user_obj != user
         followbutton = ::Gtk::Button.new
         followbutton.sensitive = false
@@ -256,7 +256,7 @@ Plugin.create :user_detail_view do
       eventbox.style = background_color
       false }
 
-    icon = ::Gtk::EventBox.new.add(::Gtk::WebIcon.new(user.icon_large, UserConfig[:profile_icon_size], UserConfig[:profile_icon_size]).tooltip(_('アイコンを開く')))
+    icon = ::Gtk::EventBox.new.add(::Gtk::WebIcon.new(user.icon_large, UserConfig[:profile_icon_size], UserConfig[:profile_icon_size]).set_tooltip_text(_('アイコンを開く')))
     icon.ssc(:button_press_event) do |this, event|
       Plugin.call(:open, user.icon_large)
       true end
