@@ -86,9 +86,9 @@ Plugin.create :user_detail_view do
     set_icon model.icon
     bio = ::Gtk::IntelligentTextview.new("")
     container = ::Gtk::Box.new(:vertical).
-      closeup(bio).
-      closeup(plugin.relation_bar(model))
-    container.closeup(plugin.mutebutton(model)) if not model.me?
+      pack_start(bio, expand: false).
+      pack_start(plugin.relation_bar(model), expand: false)
+    container.pack_start(plugin.mutebutton(model), expand: false) if not model.me?
     scrolledwindow = ::Gtk::ScrolledWindow.new
     scrolledwindow.set_policy(:automatic, :automatic)
     scrolledwindow.add_with_viewport(container)
@@ -181,16 +181,16 @@ Plugin.create :user_detail_view do
                    ::Gtk::Label.new(_("それはあなたです！"))
                  else
                    ::Gtk::Box.new(:horizontal).
-                     closeup(w_eventbox_image_following).
-                     closeup(w_following_label) end
+                     pack_start(w_eventbox_image_following, expand: false).
+                     pack_start(w_following_label, expand: false) end
       relation_container = ::Gtk::Box.new(:horizontal, icon_size.width/2)
-      relation_container.closeup(::Gtk::WebIcon.new(me.user_obj.icon, icon_size).set_tooltip_text("#{me.user_obj.idname}(#{me.user_obj[:name]})"))
-      relation_container.closeup(::Gtk::Box.new(:vertical).
-                                 closeup(relation).
-                                 closeup(::Gtk::Box.new(:horizontal).
-                                         closeup(w_eventbox_image_followed).
-                                         closeup(w_followed_label)))
-      relation_container.closeup(::Gtk::WebIcon.new(user.icon, icon_size).set_tooltip_text("#{user.idname}(#{user[:name]})"))
+      relation_container.pack_start(::Gtk::WebIcon.new(me.user_obj.icon, icon_size).set_tooltip_text("#{me.user_obj.idname}(#{me.user_obj[:name]})"), expand: false)
+      relation_container.pack_start(::Gtk::Box.new(:vertical).
+                                 pack_start(relation, expand: false).
+                                 pack_start(::Gtk::Box.new(:horizontal).
+                                         pack_start(w_eventbox_image_followed, expand: false).
+                                         pack_start(w_followed_label, expand: false), expand: false), expand: false)
+      relation_container.pack_start(::Gtk::WebIcon.new(user.icon, icon_size).set_tooltip_text("#{user.idname}(#{user[:name]})"), expand: false)
       if me.user_obj != user
         followbutton = ::Gtk::Button.new
         followbutton.sensitive = false
@@ -238,10 +238,10 @@ Plugin.create :user_detail_view do
               detach(:followings_destroy, handler_followings_destroy)
               false }
             followbutton.sensitive = true
-            relation_container.closeup(followbutton) end
+            relation_container.pack_start(followbutton, expand: false) end
         }.terminate.trap{
           w_following_label.text = _("取得できませんでした") } end
-      container.closeup(relation_container) }
+      container.pack_start(relation_container, expand: false) }
     container end
 
   # ユーザのプロフィールのヘッダ部を返す
@@ -269,8 +269,8 @@ Plugin.create :user_detail_view do
 
     eventbox.add(::Gtk::Box.new(:vertical, 0).
                   add(::Gtk::Box.new(:horizontal).
-                       closeup(icon_alignment.add(icon)).
-                       add(::Gtk::Box.new(:vertical).closeup(user_name(user, intent_token)).closeup(profile_table(user)))))
+                       pack_start(icon_alignment.add(icon), expand: false).
+                       add(::Gtk::Box.new(:vertical).pack_start(user_name(user, intent_token), expand: false).pack_start(profile_table(user), expand: false))))
   end
 
   # ユーザ名を表示する
