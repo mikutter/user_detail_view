@@ -177,19 +177,22 @@ Plugin.create :user_detail_view do
       w_followed_label = ::Gtk::Label.new("")
       w_eventbox_image_following = ::Gtk::EventBox.new
       w_eventbox_image_followed = ::Gtk::EventBox.new
+      following_relation = ::Gtk::Box.new(:horizontal).
+                 pack_start(w_eventbox_image_following, expand: false).
+                 pack_start(w_following_label, expand: false)
+      followed_relation = ::Gtk::Box.new(:horizontal).
+                 pack_start(w_eventbox_image_followed, expand: false).
+                 pack_start(w_followed_label, expand: false)
       relation = if me.user_obj == user
                    ::Gtk::Label.new(_("それはあなたです！"))
                  else
-                   ::Gtk::Box.new(:horizontal).
-                     pack_start(w_eventbox_image_following, expand: false).
-                     pack_start(w_following_label, expand: false) end
+                   ::Gtk::Box.new(:vertical).
+                     pack_start(following_relation, expand: false).
+                     pack_start(followed_relation, expand: false)
+                 end
       relation_container = ::Gtk::Box.new(:horizontal, icon_size.width/2)
       relation_container.pack_start(::Gtk::WebIcon.new(me.user_obj.icon, icon_size).set_tooltip_text("#{me.user_obj.idname}(#{me.user_obj[:name]})"), expand: false)
-      relation_container.pack_start(::Gtk::Box.new(:vertical).
-                                 pack_start(relation, expand: false).
-                                 pack_start(::Gtk::Box.new(:horizontal).
-                                         pack_start(w_eventbox_image_followed, expand: false).
-                                         pack_start(w_followed_label, expand: false), expand: false), expand: false)
+      relation_container.pack_start(relation, expand: false)
       relation_container.pack_start(::Gtk::WebIcon.new(user.icon, icon_size).set_tooltip_text("#{user.idname}(#{user[:name]})"), expand: false)
       if me.user_obj != user
         followbutton = ::Gtk::Button.new
