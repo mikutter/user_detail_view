@@ -297,7 +297,7 @@ Plugin.create :user_detail_view do
                                              underline: Pango::Underline::SINGLE})
     tag_sn.ssc(:event, &user_screen_name_event_callback(user, intent_token))
 
-    w_name.buffer.insert(w_name.buffer.start_iter, user[:idname], tag_sn)
+    w_name.buffer.insert(w_name.buffer.start_iter, user[:idname], { tags: [tag_sn] })
     w_name.buffer.insert(w_name.buffer.end_iter, "\n#{user[:name]}")
     Gtk::Box.new(:vertical).add(w_name) end
 
