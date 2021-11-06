@@ -273,7 +273,10 @@ Plugin.create :user_detail_view do
     eventbox.add(::Gtk::Box.new(:vertical, 0).
                   add(::Gtk::Box.new(:horizontal).
                        pack_start(icon_alignment.add(icon), expand: false).
-                       add(::Gtk::Box.new(:vertical).pack_start(user_name(user, intent_token), expand: false).pack_start(profile_table(user), expand: false))))
+                       add(::Gtk::Box.new(:vertical)
+                             .pack_start(user_name(user, intent_token), expand: false)
+                             .pack_start(profile_table(user), expand: false)
+                             .tap { |vbox| vbox.hexpand = true })))
   end
 
   # ユーザ名を表示する
