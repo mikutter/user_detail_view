@@ -85,19 +85,19 @@ Plugin.create :user_detail_view do
   user_fragment :aboutuser, _("ユーザについて") do
     set_icon model.icon
     bio = ::Gtk::IntelligentTextview.new("")
-    container = ::Gtk::VBox.new.
-      closeup(bio).
-      closeup(plugin.relation_bar(model))
-    container.closeup(plugin.mutebutton(model)) if not model.me?
+    container = ::Gtk::Box.new(:vertical).
+      pack_start(bio, expand: false).
+      pack_start(plugin.relation_bar(model), expand: false)
+    container.pack_start(plugin.mutebutton(model), expand: false) if not model.me?
     scrolledwindow = ::Gtk::ScrolledWindow.new
-    scrolledwindow.set_policy(::Gtk::POLICY_AUTOMATIC, ::Gtk::POLICY_AUTOMATIC)
+    scrolledwindow.set_policy(:automatic, :automatic)
     scrolledwindow.add_with_viewport(container)
     scrolledwindow.style = container.style
     wrapper = Gtk::EventBox.new
     wrapper.no_show_all = true
     wrapper.show
     nativewidget wrapper.add(scrolledwindow)
-    wrapper.ssc(:expose_event) do
+    wrapper.ssc(:draw) do
       wrapper.no_show_all = false
       wrapper.show_all
       false end
@@ -162,11 +162,11 @@ Plugin.create :user_detail_view do
   # ==== Args
   # [user] 対象となるユーザ
   # ==== Return
-  # リレーションバーのウィジェット(Gtk::VBox)
+  # リレーションバーのウィジェット(Gtk::Box)
   def relation_bar(user)
     icon_size = Gdk::Rectangle.new(0, 0, 32, 32)
     arrow_size = Gdk::Rectangle.new(0, 0, 16, 16)
-    container = ::Gtk::VBox.new(false, 4)
+    container = ::Gtk::Box.new(:vertical, 4)
     Enumerator.new{|y|
       Plugin.filtering(:worlds, y)
     }.select{|world|
@@ -177,20 +177,23 @@ Plugin.create :user_detail_view do
       w_followed_label = ::Gtk::Label.new("")
       w_eventbox_image_following = ::Gtk::EventBox.new
       w_eventbox_image_followed = ::Gtk::EventBox.new
+      following_relation = ::Gtk::Box.new(:horizontal).
+                 pack_start(w_eventbox_image_following, expand: false).
+                 pack_start(w_following_label, expand: false)
+      followed_relation = ::Gtk::Box.new(:horizontal).
+                 pack_start(w_eventbox_image_followed, expand: false).
+                 pack_start(w_followed_label, expand: false)
       relation = if me.user_obj == user
                    ::Gtk::Label.new(_("それはあなたです！"))
                  else
-                   ::Gtk::HBox.new.
-                     closeup(w_eventbox_image_following).
-                     closeup(w_following_label) end
-      relation_container = ::Gtk::HBox.new(false, icon_size.width/2)
-      relation_container.closeup(::Gtk::WebIcon.new(me.user_obj.icon, icon_size).tooltip("#{me.user_obj.idname}(#{me.user_obj[:name]})"))
-      relation_container.closeup(::Gtk::VBox.new.
-                                 closeup(relation).
-                                 closeup(::Gtk::HBox.new.
-                                         closeup(w_eventbox_image_followed).
-                                         closeup(w_followed_label)))
-      relation_container.closeup(::Gtk::WebIcon.new(user.icon, icon_size).tooltip("#{user.idname}(#{user[:name]})"))
+                   ::Gtk::Box.new(:vertical).
+                     pack_start(following_relation, expand: false).
+                     pack_start(followed_relation, expand: false)
+                 end
+      relation_container = ::Gtk::Box.new(:horizontal, icon_size.width/2)
+      relation_container.pack_start(::Gtk::WebIcon.new(me.user_obj.icon, icon_size).set_tooltip_text("#{me.user_obj.idname}(#{me.user_obj[:name]})"), expand: false)
+      relation_container.pack_start(relation, expand: false)
+      relation_container.pack_start(::Gtk::WebIcon.new(user.icon, icon_size).set_tooltip_text("#{user.idname}(#{user[:name]})"), expand: false)
       if me.user_obj != user
         followbutton = ::Gtk::Button.new
         followbutton.sensitive = false
@@ -238,10 +241,10 @@ Plugin.create :user_detail_view do
               detach(:followings_destroy, handler_followings_destroy)
               false }
             followbutton.sensitive = true
-            relation_container.closeup(followbutton) end
+            relation_container.pack_start(followbutton, expand: false) end
         }.terminate.trap{
           w_following_label.text = _("取得できませんでした") } end
-      container.closeup(relation_container) }
+      container.pack_start(relation_container, expand: false) }
     container end
 
   # ユーザのプロフィールのヘッダ部を返す
@@ -256,21 +259,24 @@ Plugin.create :user_detail_view do
       eventbox.style = background_color
       false }
 
-    icon = ::Gtk::EventBox.new.add(::Gtk::WebIcon.new(user.icon_large, UserConfig[:profile_icon_size], UserConfig[:profile_icon_size]).tooltip(_('アイコンを開く')))
+    icon = ::Gtk::EventBox.new.add(::Gtk::WebIcon.new(user.icon_large, UserConfig[:profile_icon_size], UserConfig[:profile_icon_size]).set_tooltip_text(_('アイコンを開く')))
     icon.ssc(:button_press_event) do |this, event|
       Plugin.call(:open, user.icon_large)
       true end
     icon.ssc(:realize) do |this|
-      this.window.set_cursor(Gdk::Cursor.new(Gdk::Cursor::HAND2))
+      this.window.set_cursor(Gdk::Cursor.new(:hand2))
       false end
 
     icon_alignment = Gtk::Alignment.new(0.5, 0, 0, 0)
                      .set_padding(*[UserConfig[:profile_icon_margin]]*4)
 
-    eventbox.add(::Gtk::VBox.new(false, 0).
-                  add(::Gtk::HBox.new.
-                       closeup(icon_alignment.add(icon)).
-                       add(::Gtk::VBox.new.closeup(user_name(user, intent_token)).closeup(profile_table(user)))))
+    eventbox.add(::Gtk::Box.new(:vertical, 0).
+                  add(::Gtk::Box.new(:horizontal).
+                       pack_start(icon_alignment.add(icon), expand: false).
+                       add(::Gtk::Box.new(:vertical)
+                             .pack_start(user_name(user, intent_token), expand: false)
+                             .pack_start(profile_table(user), expand: false)
+                             .tap { |vbox| vbox.hexpand = true })))
   end
 
   # ユーザ名を表示する
@@ -283,26 +289,20 @@ Plugin.create :user_detail_view do
     w_name = ::Gtk::TextView.new
     w_name.editable = false
     w_name.cursor_visible = false
-    w_name.wrap_mode = Gtk::TextTag::WRAP_CHAR
+    w_name.wrap_mode = :char
     w_name.ssc(:event) do |this, event|
       if event.is_a? ::Gdk::EventMotion
-        this.get_window(::Gtk::TextView::WINDOW_TEXT)
-          .set_cursor(::Gdk::Cursor.new(::Gdk::Cursor::XTERM)) end
+        this.get_window(:text)
+          .set_cursor(::Gdk::Cursor.new(:xterm)) end
       false end
-    if Gtk::BINDING_VERSION >= [3,1,2]
-      tag_sn = w_name.buffer.create_tag('sn', {foreground: '#0000ff',
-                                               weight: Pango::Weight::BOLD,
-                                               underline: Pango::Underline::SINGLE})
-    else
-      tag_sn = w_name.buffer.create_tag('sn', {foreground: '#0000ff',
-                                               weight: Pango::FontDescription::WEIGHT_BOLD,
-                                               underline: Pango::AttrUnderline::SINGLE})
-    end
+    tag_sn = w_name.buffer.create_tag('sn', {foreground: '#0000ff',
+                                             weight: Pango::Weight::BOLD,
+                                             underline: Pango::Underline::SINGLE})
     tag_sn.ssc(:event, &user_screen_name_event_callback(user, intent_token))
 
-    w_name.buffer.insert(w_name.buffer.start_iter, user[:idname], tag_sn)
+    w_name.buffer.insert(w_name.buffer.start_iter, user[:idname], { tags: [tag_sn] })
     w_name.buffer.insert(w_name.buffer.end_iter, "\n#{user[:name]}")
-    Gtk::VBox.new.add(w_name) end
+    Gtk::Box.new(:vertical).add(w_name) end
 
   # プロフィールの上のところの格子になってる奴をかえす
   # ==== Args
@@ -320,12 +320,12 @@ Plugin.create :user_detail_view do
       profile_columns.each_with_index do |column, index|
         key, value = column
         table.
-          attach(::Gtk::Label.new(value.to_s).right, 0, 1, index, index+1).
-          attach(::Gtk::Label.new(key.to_s)  .left , 1, 2, index, index+1)
+          attach(::Gtk::Label.new(value.to_s).set_halign(:end), 0, 1, index, index+1).
+          attach(::Gtk::Label.new(key.to_s).set_halign(:start), 1, 2, index, index+1)
       end
     }.set_row_spacing(0, 4).
       set_row_spacing(1, 4).
-      set_column_spacing(0, 16)
+      set_col_spacing(0, 16)
   end
 
   def background_color
@@ -347,8 +347,8 @@ Plugin.create :user_detail_view do
         end
       when ::Gdk::EventMotion
         textview
-          .get_window(::Gtk::TextView::WINDOW_TEXT)
-          .set_cursor(::Gdk::Cursor.new(::Gdk::Cursor::HAND2))
+          .get_window(:text)
+          .set_cursor(::Gdk::Cursor.new(:hand2))
       end
       false
     end
