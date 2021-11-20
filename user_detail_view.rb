@@ -273,7 +273,10 @@ Plugin.create :user_detail_view do
     eventbox.add(::Gtk::Box.new(:vertical, 0).
                   add(::Gtk::Box.new(:horizontal).
                        pack_start(icon_alignment.add(icon), expand: false).
-                       add(::Gtk::Box.new(:vertical).pack_start(user_name(user, intent_token), expand: false).pack_start(profile_table(user), expand: false))))
+                       add(::Gtk::Box.new(:vertical)
+                             .pack_start(user_name(user, intent_token), expand: false)
+                             .pack_start(profile_table(user), expand: false)
+                             .tap { |vbox| vbox.hexpand = true })))
   end
 
   # ユーザ名を表示する
@@ -297,7 +300,7 @@ Plugin.create :user_detail_view do
                                              underline: Pango::Underline::SINGLE})
     tag_sn.ssc(:event, &user_screen_name_event_callback(user, intent_token))
 
-    w_name.buffer.insert(w_name.buffer.start_iter, user[:idname], tag_sn)
+    w_name.buffer.insert(w_name.buffer.start_iter, user[:idname], { tags: [tag_sn] })
     w_name.buffer.insert(w_name.buffer.end_iter, "\n#{user[:name]}")
     Gtk::Box.new(:vertical).add(w_name) end
 
