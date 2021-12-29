@@ -1,7 +1,7 @@
 ---
 slug: :user_detail_view
 depends:
-  mikutter: '3.3'
+  mikutter: '5.0'
   plugin:
   - gui
   - gtk3
@@ -10,7 +10,7 @@ depends:
   - intent
   - skin
   - twitter
-version: '1.0'
+version: '2.0'
 author: toshi_a
 name: プロフィール
 description: 特定のユーザのプロフィールを表示する機能を追加する。また、プロフィール画面をカスタマイズするためのAPIを提供する
